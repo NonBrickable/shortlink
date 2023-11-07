@@ -1,6 +1,9 @@
 package com.lv.shortlink.admin.controller;
 
+import com.lv.shortlink.admin.common.convention.exception.ClientException;
 import com.lv.shortlink.admin.common.convention.result.Result;
+import com.lv.shortlink.admin.common.convention.result.Results;
+import com.lv.shortlink.admin.common.enums.UserErrorCodeEnum;
 import com.lv.shortlink.admin.dto.resp.UserRespDTO;
 import com.lv.shortlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,10 @@ public class UserController {
      */
     @GetMapping("api/shortlink/v1/user/{username}")
     public Result<UserRespDTO> getUserByUsername(@PathVariable("username") String username){
-        return new Result<UserRespDTO>().setCode("0").setData(userService.getUserByUsername(username));
+        UserRespDTO result = userService.getUserByUsername(username);
+        if(result == null){
+            throw new ClientException(UserErrorCodeEnum.USER_NULL);
+        }
+        return Results.success(result);
     }
 }

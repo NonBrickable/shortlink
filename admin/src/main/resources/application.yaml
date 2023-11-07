@@ -4,7 +4,7 @@ spring:
   datasource:
       username: root
       password: 123456
-      url: jdbc:mysql://127.0.0.1:3306/link?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://127.0.0.1:3306/link?characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
       driver-class-name: com.mysql.cj.jdbc.Driver
       hikari:
           connection-test-query: select 1
