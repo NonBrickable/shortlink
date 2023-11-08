@@ -42,4 +42,6 @@ public interface UserService extends IService<UserDO> {
      * @param requestParam 用户登录请求参数
      */
     UserLoginRespDTO login(UserLoginReqDTO requestParam);
+
+    Boolean checkLogin(String username, String token);
 }
