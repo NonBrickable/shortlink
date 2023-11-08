@@ -4,8 +4,10 @@ import com.lv.shortlink.admin.common.convention.exception.ClientException;
 import com.lv.shortlink.admin.common.convention.result.Result;
 import com.lv.shortlink.admin.common.convention.result.Results;
 import com.lv.shortlink.admin.common.enums.UserErrorCodeEnum;
+import com.lv.shortlink.admin.dto.req.UserLoginReqDTO;
 import com.lv.shortlink.admin.dto.req.UserRegisterReqDTO;
 import com.lv.shortlink.admin.dto.req.UserUpdateReqDTO;
+import com.lv.shortlink.admin.dto.resp.UserLoginRespDTO;
 import com.lv.shortlink.admin.dto.resp.UserRespDTO;
 import com.lv.shortlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +57,13 @@ public class UserController {
     public Result<Void> update(@RequestBody UserUpdateReqDTO requestParam){
         userService.update(requestParam);
         return Results.success();
+    }
+
+    /**
+     * 用户登录
+     */
+    @PostMapping("api/short-link/v1/user/login")
+    public Result<UserLoginRespDTO> login(@RequestBody UserLoginReqDTO userLoginReqDTO){
+        return Results.success(userService.login(userLoginReqDTO));
     }
 }
