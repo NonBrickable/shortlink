@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lv.shortlink.admin.common.biz.user.UserContext;
 import com.lv.shortlink.admin.dao.entity.GroupDO;
 import com.lv.shortlink.admin.dao.mapper.GroupMapper;
+import com.lv.shortlink.admin.dto.req.ShortLinkGroupSortReqDTO;
 import com.lv.shortlink.admin.dto.req.ShortLinkGroupUpdateReqDTO;
 import com.lv.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
 import com.lv.shortlink.admin.service.GroupService;
@@ -38,11 +39,11 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
     @Override
     public List<ShortLinkGroupRespDTO> listGroup() {
         LambdaQueryWrapper<GroupDO> queryWrapper = Wrappers.lambdaQuery(GroupDO.class)
-                .eq(GroupDO::getDelFlag,0)
+                .eq(GroupDO::getDelFlag, 0)
                 .eq(GroupDO::getUsername, UserContext.getUsername())
-                .orderByDesc(GroupDO::getSortOrder,GroupDO::getUpdateTime);
+                .orderByDesc(GroupDO::getSortOrder, GroupDO::getUpdateTime);
         List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
-        return BeanUtil.copyToList(groupDOList,ShortLinkGroupRespDTO.class);
+        return BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .eq(GroupDO::getGid, requestParam.getGid());
         GroupDO groupDO = new GroupDO();
         groupDO.setName(requestParam.getName());
-        baseMapper.update(groupDO,updateWrapper);
+        baseMapper.update(groupDO, updateWrapper);
     }
 
     @Override
@@ -64,11 +65,26 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .eq(GroupDO::getGid, gid);
         GroupDO groupDO = new GroupDO();
         groupDO.setDelFlag(1);
-        baseMapper.update(groupDO,updateWrapper);
+        baseMapper.update(groupDO, updateWrapper);
+    }
+
+    @Override
+    public void sortGroup(List<ShortLinkGroupSortReqDTO> requestParam) {
+        requestParam.forEach(each -> {
+            GroupDO groupDO = GroupDO.builder()
+                    .sortOrder(each.getSortOrder())
+                    .build();
+            LambdaUpdateWrapper<GroupDO> updateWrapper = Wrappers.lambdaUpdate(GroupDO.class)
+                    .eq(GroupDO::getGid, each.getGid())
+                    .eq(GroupDO::getDelFlag, 0)
+                    .eq(GroupDO::getUsername, UserContext.getUsername());
+            baseMapper.update(groupDO, updateWrapper);
+        });
     }
 
     /**
      * 判断pid是否可用
+     *
      * @param gid
      * @return
      */
