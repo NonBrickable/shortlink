@@ -1,5 +1,7 @@
 package com.lv.shortlink.admin.dao.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lv.shortlink.admin.common.database.BaseDO;
 import lombok.AllArgsConstructor;
@@ -35,4 +37,10 @@ public class GroupDO extends BaseDO {
      * 创建人
      */
     private String username;
+
+    /**
+     * 分组排序
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private Integer sortOrder;
 }
