@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 用户信息传输过滤器
@@ -15,14 +16,17 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserTransmitFilter implements Filter {
     private final StringRedisTemplate stringRedisTemplate;
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String username = httpServletRequest.getHeader("username");
         String token = httpServletRequest.getHeader("token");
         String requestURI = httpServletRequest.getRequestURI();
-        if (!Objects.equals(requestURI,"/api/short-link/admin/v1/user/login")) {
+        Set<String> set = new HashSet<>();
+        set.add("/api/short-link/admin/v1/user/login");
+        set.add("/api/short-link/admin/v1/user");
+        set.add("/api/short-link/admin/v1/user/check-login");
+        if (!set.contains(requestURI)) {
             Object userDOStr = stringRedisTemplate.opsForHash().get("login_" + username, token);
             if (userDOStr != null) {
                 UserInfoDTO userInfoDTO = JSON.parseObject(userDOStr.toString(), UserInfoDTO.class);
