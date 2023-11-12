@@ -1,20 +1,18 @@
 package com.lv.shortlink.admin.test;
 
 public class UserTableShardingTest {
-    public static final String SQL = "CREATE TABLE `t_user_%d` (\n" +
+    public static final String SQL = "CREATE TABLE `t_group_%d` (\n" +
             "  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID',\n" +
-            "  `username` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '用户名',\n" +
-            "  `password` varchar(512) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '密码',\n" +
-            "  `real_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '真实姓名',\n" +
-            "  `phone` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '手机号',\n" +
-            "  `mail` varchar(512) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '邮箱',\n" +
-            "  `deletion_time` bigint DEFAULT NULL COMMENT '注销时间戳',\n" +
+            "  `gid` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '分组标识',\n" +
+            "  `name` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '分组名称',\n" +
+            "  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '创建人',\n" +
+            "  `sort_order` int DEFAULT NULL COMMENT '分组排序',\n" +
             "  `create_time` datetime DEFAULT NULL COMMENT '创建时间',\n" +
-            "  `update_time` datetime DEFAULT NULL COMMENT '更新时间',\n" +
-            "  `del_flag` tinyint DEFAULT NULL COMMENT '删除标识 0：没有删除 1：删除',\n" +
+            "  `update_time` datetime DEFAULT NULL COMMENT '更改时间',\n" +
+            "  `del_flag` tinyint(1) DEFAULT NULL COMMENT '删除标识 0：没有删除 1：删除',\n" +
             "  PRIMARY KEY (`id`),\n" +
-            "  UNIQUE KEY `idx_unique_username` (`username`) USING BTREE\n" +
-            ") ENGINE=InnoDB AUTO_INCREMENT=1721886382168838148 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+            "  UNIQUE KEY `index_unique_username_gid` (`gid`,`username`) USING BTREE\n" +
+            ") ENGINE=InnoDB AUTO_INCREMENT=1722582993404440581 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
 
 
     public static void main(String[] args) {
