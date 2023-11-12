@@ -18,11 +18,6 @@ public class ShortLinkGroupRespDTO {
     private String name;
 
     /**
-     * 创建人
-     */
-    private String username;
-
-    /**
      * 分组排序
      */
     private Integer sortOrder;
