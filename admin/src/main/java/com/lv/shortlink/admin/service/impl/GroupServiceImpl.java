@@ -6,11 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lv.shortlink.admin.common.biz.user.UserContext;
+import com.lv.shortlink.admin.common.convention.result.Result;
 import com.lv.shortlink.admin.dao.entity.GroupDO;
 import com.lv.shortlink.admin.dao.mapper.GroupMapper;
 import com.lv.shortlink.admin.dto.req.ShortLinkGroupSortReqDTO;
 import com.lv.shortlink.admin.dto.req.ShortLinkGroupUpdateReqDTO;
 import com.lv.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
+import com.lv.shortlink.admin.remote.ShortLinkRemoteService;
+import com.lv.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.lv.shortlink.admin.service.GroupService;
 import com.lv.shortlink.admin.toolkit.RandomGenerator;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,8 @@ import java.util.List;
  */
 @Service
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implements GroupService {
+    ShortLinkRemoteService shortLinkRemoteService = new ShortLinkRemoteService() {
+    };
     @Override
     public void saveGroup(String groupName) {
         String gid;
@@ -43,7 +48,16 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .eq(GroupDO::getUsername, UserContext.getUsername())
                 .orderByDesc(GroupDO::getSortOrder, GroupDO::getUpdateTime);
         List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
-        return BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
+        Result<List<ShortLinkGroupCountQueryRespDTO>> listResult = shortLinkRemoteService.listGroupShortLinkCount(groupDOList.stream().map(GroupDO::getGid).toList());
+        List<ShortLinkGroupRespDTO> shortLinkGroupRespDTOList = BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
+        for(ShortLinkGroupRespDTO resp:shortLinkGroupRespDTOList){
+            for(ShortLinkGroupCountQueryRespDTO each:listResult.getData()){
+                if(resp.getGid().equals(each.getGid())){
+                    resp.setShortLinkCount(each.getShortLinkCount());
+                }
+            }
+        }
+        return shortLinkGroupRespDTOList;
     }
 
     @Override
