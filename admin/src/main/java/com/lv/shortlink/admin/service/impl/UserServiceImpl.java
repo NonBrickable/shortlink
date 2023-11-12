@@ -23,6 +23,7 @@ import org.redisson.api.RBloomFilter;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -59,26 +60,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public void register(UserRegisterReqDTO requestParam) {
-        Boolean ok = hasUsername(requestParam.getUsername());
         if (!hasUsername(requestParam.getUsername())) {
             throw new ClientException(UserErrorCodeEnum.USER_NAME_EXIST);
         }
         RLock lock = redissonClient.getLock(RedisCacheConstant.LOCK_USER_REGISTER_KEY + requestParam.getUsername());
         try {
             if (lock.tryLock()) {
-                int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
-                if (inserted < 1) {
-                    throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
+                try {
+                    int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
+                    if (inserted < 1) {
+                        throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
+                    }
+                } catch (DuplicateKeyException ex) {
+                    throw new ClientException(UserErrorCodeEnum.USER_EXIST);
                 }
                 userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
-            } else {
-                throw new ClientException(UserErrorCodeEnum.USER_NAME_EXIST);
+                return;
             }
+            throw new ClientException(UserErrorCodeEnum.USER_NAME_EXIST);
         } finally {
             lock.unlock();
         }
     }
-
 
     @Override
     public void update(UserUpdateReqDTO requestParam) {
@@ -98,12 +101,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException("用户不存在");
         }
         Boolean hasLogin = stringRedisTemplate.hasKey("login_" + requestParam.getUsername());
-        if(hasLogin != null && hasLogin){
+        if (hasLogin != null && hasLogin) {
             throw new ClientException("用户已登录");
         }
         String uuid = UUID.randomUUID().toString();
-        stringRedisTemplate.opsForHash().put("login_" + requestParam.getUsername(),uuid, JSON.toJSONString(userDO));
-        stringRedisTemplate.expire("login_" + requestParam.getUsername(),30, TimeUnit.DAYS);
+        stringRedisTemplate.opsForHash().put("login_" + requestParam.getUsername(), uuid, JSON.toJSONString(userDO));
+        stringRedisTemplate.expire("login_" + requestParam.getUsername(), 30, TimeUnit.DAYS);
         return new UserLoginRespDTO(uuid);
     }
 
@@ -114,7 +117,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public void logout(String username, String token) {
-        if(checkLogin(username,token)){
+        if (checkLogin(username, token)) {
             stringRedisTemplate.delete("login_" + username);
             return;
         }
