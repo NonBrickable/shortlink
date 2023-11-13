@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lv.shortlink.admin.common.convention.result.Result;
+import com.lv.shortlink.admin.remote.dto.ShortLinkUpdateReqDTO;
 import com.lv.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.lv.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.lv.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
@@ -59,5 +60,12 @@ public interface ShortLinkRemoteService {
         System.out.println(resultStr);
         return JSON.parseObject(resultStr, new TypeReference<>() {
         });
+    }
+
+    /**
+     * 修改短链接
+     */
+    default void updateShortLink(@RequestBody ShortLinkUpdateReqDTO requestParam){
+        HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/update",JSON.toJSONString(requestParam));
     }
 }
