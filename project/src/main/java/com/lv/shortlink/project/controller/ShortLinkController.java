@@ -10,6 +10,8 @@ import com.lv.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.lv.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.lv.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.lv.shortlink.project.service.ShortLinkService;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +23,15 @@ public class ShortLinkController {
     private final ShortLinkService shortLinkService;
 
     /**
+     * 短链接跳转
+     */
+    @GetMapping("/{short-uri}")
+    public void restoreUrl(@PathVariable("short-uri")String shortUri, ServletRequest request, ServletResponse response){
+        shortLinkService.restoreUrl(shortUri,request,response);
+    }
+
+    /**
      * 创建短链接
-     * @param requestParam
-     * @return
      */
     @PostMapping("/api/short-link/v1/create")
     public Result<ShortLinkCreateRespDTO> createShortLink(@RequestBody ShortLinkCreateReqDTO requestParam){
@@ -32,7 +40,6 @@ public class ShortLinkController {
 
     /**
      * 修改短链接
-     * @return
      */
     @PostMapping("/api/short-link/v1/update")
     public Result<Void> updateShortLink(@RequestBody ShortLinkUpdateReqDTO requestParam){
@@ -42,8 +49,6 @@ public class ShortLinkController {
 
     /**
      * 分页查询短链接
-     * @param requestParam
-     * @return
      */
     @GetMapping("/api/short-link/v1/page")
     public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam){
