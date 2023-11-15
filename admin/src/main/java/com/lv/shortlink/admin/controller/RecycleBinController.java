@@ -5,6 +5,7 @@ import com.lv.shortlink.admin.common.convention.result.Result;
 import com.lv.shortlink.admin.common.convention.result.Results;
 import com.lv.shortlink.admin.remote.ShortLinkRemoteService;
 import com.lv.shortlink.admin.remote.dto.req.RecycleBinRecoverReqDTO;
+import com.lv.shortlink.admin.remote.dto.req.RecycleBinRemoveReqDTO;
 import com.lv.shortlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
 import com.lv.shortlink.admin.remote.dto.req.ShortLinkRecyclePageReqDTO;
 import com.lv.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
@@ -26,7 +27,7 @@ public class RecycleBinController {
     };
 
     /**
-     * 保存回收站
+     * 保存到回收站
      * @param requestParam
      * @return
      */
@@ -50,6 +51,15 @@ public class RecycleBinController {
     @PostMapping("/api/short-link/admin/v1/recycle-bin/recover")
     public Result<Void> recoverRecycleBin(@RequestBody RecycleBinRecoverReqDTO requestParam){
         shortLinkRemoteService.recoverRecycleBin(requestParam);
+        return Results.success();
+    }
+
+    /**
+     * 短链接彻底删除
+     */
+    @PostMapping("/api/short-link/admin/v1/recycle-bin/remove")
+    public Result<Void> removeRecycleBin(@RequestBody RecycleBinRemoveReqDTO requestParam){
+        shortLinkRemoteService.removeRecycleBin(requestParam);
         return Results.success();
     }
 }

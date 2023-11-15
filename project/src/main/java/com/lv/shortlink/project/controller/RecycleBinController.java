@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lv.shortlink.project.common.convention.result.Result;
 import com.lv.shortlink.project.common.convention.result.Results;
 import com.lv.shortlink.project.dto.req.RecycleBinRecoverReqDTO;
+import com.lv.shortlink.project.dto.req.RecycleBinRemoveReqDTO;
 import com.lv.shortlink.project.dto.req.RecycleBinSaveReqDTO;
 import com.lv.shortlink.project.dto.req.ShortLinkRecyclePageReqDTO;
 import com.lv.shortlink.project.dto.resp.ShortLinkPageRespDTO;
@@ -50,4 +51,12 @@ public class RecycleBinController {
         return Results.success();
     }
 
+    /**
+     * 短链接彻底删除
+     */
+    @PostMapping("/api/short-link/v1/recycle-bin/remove")
+    public Result<Void> removeRecycleBin(@RequestBody RecycleBinRemoveReqDTO requestParam){
+        recycleBinService.removeRecycleBin(requestParam);
+        return Results.success();
+    }
 }
