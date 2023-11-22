@@ -1,6 +1,8 @@
 package com.lv.shortlink.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.Week;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -10,8 +12,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lv.shortlink.project.common.convention.exception.ClientException;
 import com.lv.shortlink.project.common.convention.exception.ServiceException;
+import com.lv.shortlink.project.dao.entity.LinkAccessStatsDO;
 import com.lv.shortlink.project.dao.entity.ShortLinkDO;
 import com.lv.shortlink.project.dao.entity.ShortLinkGoToDO;
+import com.lv.shortlink.project.dao.mapper.LinkAccessStatsMapper;
 import com.lv.shortlink.project.dao.mapper.ShortLinkGoToMapper;
 import com.lv.shortlink.project.dao.mapper.ShortLinkMapper;
 import com.lv.shortlink.project.dto.req.ShortLinkCreateReqDTO;
@@ -53,6 +57,7 @@ import static com.lv.shortlink.project.common.constant.RedisKeyConstant.*;
 public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLinkDO> implements ShortLinkService {
     private final RBloomFilter<String> shortUriCreateCachePenetrationBloomFilter;
     private final ShortLinkGoToMapper shortLinkGoToMapper;
+    private final LinkAccessStatsMapper linkAccessStatsMapper;
     private final StringRedisTemplate stringRedisTemplate;
     private final RedissonClient redissonClient;
 
@@ -177,6 +182,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         String fullShortUrl = serverName + "/" + shortUri;
         String originalLink = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY,fullShortUrl));
         if(StringUtils.isNotBlank(originalLink)){
+            shortLinkStats(fullShortUrl, null, request, response);
             ((HttpServletResponse) response).sendRedirect(originalLink);
             return;
         }
@@ -194,6 +200,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         try{
             originalLink = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY,fullShortUrl));
             if(StringUtils.isNotBlank(originalLink)){
+                shortLinkStats(fullShortUrl, null, request, response);
                 ((HttpServletResponse) response).sendRedirect(originalLink);
                 return;
             }
@@ -215,12 +222,42 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     stringRedisTemplate.opsForValue().set(String.format(GOTO_IS_NULL_LINK_KEY,fullShortUrl),"-",30, TimeUnit.MINUTES);
                     return;
                 }
-                stringRedisTemplate.opsForValue().set(String.format(GOTO_SHORT_LINK_KEY,fullShortUrl),shortLinkDO.getOriginUrl());
+                stringRedisTemplate.opsForValue().set(
+                        String.format(GOTO_SHORT_LINK_KEY,fullShortUrl),
+                        shortLinkDO.getOriginUrl(),
+                        LinkUtil.getLinkCacheValidTime(shortLinkDO.getValidDate()),TimeUnit.MILLISECONDS);
+                shortLinkStats(shortLinkDO.getFullShortUrl(),shortLinkDO.getGid(),request,response);
+                shortLinkStats(fullShortUrl, shortLinkDO.getGid(), request, response);
                 ((HttpServletResponse) response).sendRedirect(shortLinkDO.getOriginUrl());
             }
-
         }finally {
             lock.unlock();
+        }
+    }
+    private void shortLinkStats(String fullShortUrl,String gid,ServletRequest request,ServletResponse response){
+        try {
+            if(!StringUtils.isNotBlank(gid)){
+                LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
+                        .eq(ShortLinkDO::getFullShortUrl, fullShortUrl);
+                ShortLinkDO shortLinkDO = baseMapper.selectOne(queryWrapper);
+                gid = shortLinkDO.getGid();
+            }
+            int hour = DateUtil.hour(new Date(),true);
+            Week week = DateUtil.dayOfWeekEnum(new Date());
+            int weekValue = week.getIso8601Value();
+            LinkAccessStatsDO accessStatsDO = LinkAccessStatsDO.builder()
+                    .hour(hour)
+                    .weekday(weekValue)
+                    .pv(1)
+                    .uv(1)
+                    .uip(1)
+                    .fullShortUrl(fullShortUrl)
+                    .gid(gid)
+                    .date(new Date())
+                    .build();
+            linkAccessStatsMapper.shortLinkStats(accessStatsDO);
+        } catch (Exception e) {
+            log.error("短链接统计错误");
         }
     }
 
