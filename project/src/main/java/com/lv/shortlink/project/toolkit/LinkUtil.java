@@ -15,7 +15,7 @@ import static com.lv.shortlink.project.common.constant.ShortLinkConstant.DEFAULT
 public class LinkUtil {
     /**
      * 获取短链接缓存应该设置的有效时间
-     * @param validDate
+     * @param validDate 有效日期
      * @return
      */
     public static long getLinkCacheValidTime(Date validDate){
@@ -26,7 +26,7 @@ public class LinkUtil {
     /**
      * 获取请求真实ip地址
      *
-     * @param request
+     * @param request 请求
      * @return
      */
     public static String getClientIp(HttpServletRequest request) {
@@ -52,7 +52,7 @@ public class LinkUtil {
 
     /**
      * 检测用户发起请求的操作系统
-     * @param request
+     * @param request 请求
      * @return
      */
     public static String getOs(HttpServletRequest request) {
@@ -73,7 +73,30 @@ public class LinkUtil {
                 return "Unknown";
             }
         }
-
         return "Unknown";
+    }
+
+    /**
+     * 获取用户访问浏览器
+     * @param request 请求
+     * @return 访问浏览器
+     */
+    public static String getBrowser(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent.toLowerCase().contains("edg")) {
+            return "Microsoft Edge";
+        } else if (userAgent.toLowerCase().contains("chrome")) {
+            return "Google Chrome";
+        } else if (userAgent.toLowerCase().contains("firefox")) {
+            return "Mozilla Firefox";
+        } else if (userAgent.toLowerCase().contains("safari")) {
+            return "Apple Safari";
+        } else if (userAgent.toLowerCase().contains("opera")) {
+            return "Opera";
+        } else if (userAgent.toLowerCase().contains("msie") || userAgent.toLowerCase().contains("trident")) {
+            return "Internet Explorer";
+        } else {
+            return "Unknown";
+        }
     }
 }
