@@ -19,14 +19,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lv.shortlink.project.common.constant.ShortLinkConstant;
 import com.lv.shortlink.project.common.convention.exception.ClientException;
 import com.lv.shortlink.project.common.convention.exception.ServiceException;
-import com.lv.shortlink.project.dao.entity.LinkAccessStatsDO;
-import com.lv.shortlink.project.dao.entity.LinkLocaleStatsDO;
-import com.lv.shortlink.project.dao.entity.ShortLinkDO;
-import com.lv.shortlink.project.dao.entity.ShortLinkGoToDO;
-import com.lv.shortlink.project.dao.mapper.LinkAccessStatsMapper;
-import com.lv.shortlink.project.dao.mapper.LinkLocaleStatsMapper;
-import com.lv.shortlink.project.dao.mapper.ShortLinkGoToMapper;
-import com.lv.shortlink.project.dao.mapper.ShortLinkMapper;
+import com.lv.shortlink.project.dao.entity.*;
+import com.lv.shortlink.project.dao.mapper.*;
 import com.lv.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.lv.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.lv.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
@@ -70,6 +64,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final ShortLinkGoToMapper shortLinkGoToMapper;
     private final LinkAccessStatsMapper linkAccessStatsMapper;
     private final LinkLocaleStatsMapper linkLocaleStatsMapper;
+    private final LinkOsStatsMapper linkOsStatsMapper;
     private final StringRedisTemplate stringRedisTemplate;
     private final RedissonClient redissonClient;
     @Value("${short-link.stats.locale.amap-key}")
@@ -278,7 +273,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             } else {
                 addResponseCookieTask.run();
             }
-            String remoteAddr = getClientIp((HttpServletRequest) request);
+            String remoteAddr = LinkUtil.getClientIp((HttpServletRequest) request);
             Long uipAdded = stringRedisTemplate.opsForSet().add("short-link:stats:uip:" + fullShortUrl, remoteAddr);
             boolean uipFirstFlag = uipAdded != null && uipAdded > 0;
             if (!StringUtils.isNotBlank(gid)) {
@@ -322,38 +317,21 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         .cnt(1)
                         .country("中国")
                         .build();
-                linkLocaleStatsMapper.shortLinkLocalStats(linkLocaleStatsDO);
+                linkLocaleStatsMapper.shortLinkLocaleStats(linkLocaleStatsDO);
             }
+            //操作系统统计
+            String os = LinkUtil.getOs((HttpServletRequest) request);
+            LinkOsStatsDO linkOsStatsDO = LinkOsStatsDO.builder()
+                    .fullShortUrl(fullShortUrl)
+                    .gid(gid)
+                    .date(new Date())
+                    .cnt(1)
+                    .os(os)
+                    .build();
+            linkOsStatsMapper.shortLinkOsStats(linkOsStatsDO);
         } catch (Exception e) {
             log.error("短链接统计错误");
         }
-    }
-
-    /**
-     * 获取请求真实ip地址
-     *
-     * @param request
-     * @return
-     */
-    private String getClientIp(HttpServletRequest request) {
-        String ipAddress = request.getHeader("X-Forwarded-For");
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.getHeader("Proxy-Client-IP");
-        }
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.getRemoteAddr();
-        }
-
-        // 如果通过多级代理，X-Forwarded-For 的值会是多个 IP 地址，第一个 IP 地址才是真实 IP
-        if (ipAddress != null && ipAddress.length() > 15) {
-            if (ipAddress.indexOf(",") > 0) {
-                ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
-            }
-        }
-        return ipAddress;
     }
 
     /**
@@ -379,5 +357,4 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         }
         return shortLinkSuffix;
     }
-
 }
