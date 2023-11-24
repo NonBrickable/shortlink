@@ -120,7 +120,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .build();
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateShortLink(ShortLinkUpdateReqDTO requestParam) {
         // TODO: 2023/11/13 后续重新写
