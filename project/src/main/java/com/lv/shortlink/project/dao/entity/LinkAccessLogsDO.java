@@ -32,9 +32,19 @@ public class LinkAccessLogsDO extends BaseDO {
     private String gid;
 
     /**
-     * 用户
+     * 用户信息
      */
     private String user;
+
+    /**
+     * 地区
+     */
+    private String locale;
+
+    /**
+     * 操作系统
+     */
+    private String os;
 
     /**
      * 浏览器
@@ -42,9 +52,14 @@ public class LinkAccessLogsDO extends BaseDO {
     private String browser;
 
     /**
-     * 操作系统
+     * 访问设备
      */
-    private String os;
+    private String device;
+
+    /**
+     * 访问网络
+     */
+    private String network;
 
     /**
      * ip地址

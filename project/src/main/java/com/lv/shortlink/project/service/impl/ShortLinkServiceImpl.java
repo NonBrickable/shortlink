@@ -311,15 +311,16 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             JSONObject localeResultObject = JSON.parseObject(localeResultStr);
             String infoCode = localeResultObject.getString("infocode");
             LinkLocaleStatsDO linkLocaleStatsDO;
+            String province = localeResultObject.getString("province");
+            String city = "未知";
             if (StrUtil.isNotBlank(infoCode) && StrUtil.equals(infoCode, "10000")) {
-                String province = localeResultObject.getString("province");
                 boolean unknownFlag = StrUtil.equals(province,"[]") ? true : false;
                 linkLocaleStatsDO = LinkLocaleStatsDO.builder()
                         .fullShortUrl(fullShortUrl)
                         .gid(gid)
                         .date(new Date())
-                        .province(unknownFlag ? "未知" : province)
-                        .city(unknownFlag ? "未知" : localeResultObject.getString("city"))
+                        .province(province = unknownFlag ? "未知" : province)
+                        .city(city = unknownFlag ? "未知" : localeResultObject.getString("city"))
                         .adcode(unknownFlag ? "未知" : localeResultObject.getString("adcode"))
                         .cnt(1)
                         .country("中国")
@@ -327,39 +328,43 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 linkLocaleStatsMapper.shortLinkLocaleStats(linkLocaleStatsDO);
             }
             //操作系统统计
+            String os = LinkUtil.getOs((HttpServletRequest) request);
             LinkOsStatsDO linkOsStatsDO = LinkOsStatsDO.builder()
                     .fullShortUrl(fullShortUrl)
                     .gid(gid)
                     .date(new Date())
                     .cnt(1)
-                    .os(LinkUtil.getOs((HttpServletRequest) request))
+                    .os(os)
                     .build();
             linkOsStatsMapper.shortLinkOsStats(linkOsStatsDO);
             //浏览器统计
+            String browser = LinkUtil.getBrowser((HttpServletRequest) request);
             LinkBrowserStatsDO linkBrowserStatsDO = LinkBrowserStatsDO.builder()
                     .fullShortUrl(fullShortUrl)
                     .gid(gid)
                     .date(new Date())
                     .cnt(1)
-                    .browser(LinkUtil.getBrowser((HttpServletRequest) request))
+                    .browser(browser)
                     .build();
             linkBrowserStatsMapper.shortLinkBrowserStats(linkBrowserStatsDO);
             //访问设备统计
+            String device = LinkUtil.getDevice((HttpServletRequest) request);
             LinkDeviceStatsDO linkDeviceStatsDO = LinkDeviceStatsDO.builder()
                     .fullShortUrl(fullShortUrl)
                     .gid(gid)
                     .date(new Date())
                     .cnt(1)
-                    .device(LinkUtil.getDevice((HttpServletRequest) request))
+                    .device(device)
                     .build();
             linkDeviceStatsMapper.shortLinkDeviceStats(linkDeviceStatsDO);
             //访问网络统计
+            String network = LinkUtil.getNetwork((HttpServletRequest) request);
             LinkNetworkStatsDO linkNetworkStatsDO = LinkNetworkStatsDO.builder()
                     .fullShortUrl(fullShortUrl)
                     .gid(gid)
                     .date(new Date())
                     .cnt(1)
-                    .network(LinkUtil.getNetwork((HttpServletRequest) request))
+                    .network(network)
                     .build();
             linkNetworkStatsMapper.shortLinkNetworkStats(linkNetworkStatsDO);
             //记录访问日志
@@ -368,8 +373,11 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .fullShortUrl(fullShortUrl)
                     .gid(gid)
                     .ip(remoteAddr)
-                    .browser(LinkUtil.getBrowser((HttpServletRequest) request))
-                    .os(LinkUtil.getOs((HttpServletRequest) request))
+                    .browser(browser)
+                    .os(os)
+                    .locale(StrUtil.join("-","中国",province,city))
+                    .device(device)
+                    .network(network)
                     .build();
             linkAccessLogsMapper.insert(linkAccessLogsDO);
         } catch (Exception e) {
