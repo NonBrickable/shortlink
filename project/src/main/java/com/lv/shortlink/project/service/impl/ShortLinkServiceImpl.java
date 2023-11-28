@@ -383,6 +383,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .network(network)
                     .build();
             linkAccessLogsMapper.insert(linkAccessLogsDO);
+            baseMapper.incrementStats(gid,fullShortUrl,1,uvFirstFlag.get() ? 1 : 0,uipFirstFlag ? 1 : 0);
         } catch (Exception e) {
             log.error("短链接统计错误");
         }
