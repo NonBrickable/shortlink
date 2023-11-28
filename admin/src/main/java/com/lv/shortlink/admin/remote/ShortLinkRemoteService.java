@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lv.shortlink.admin.common.convention.result.Result;
-import com.lv.shortlink.admin.remote.dto.ShortLinkUpdateReqDTO;
+import com.lv.shortlink.admin.remote.dto.resp.ShortLinkUpdateReqDTO;
 import com.lv.shortlink.admin.remote.dto.req.*;
 import com.lv.shortlink.admin.remote.dto.resp.*;
 import org.springframework.web.bind.annotation.RequestBody;

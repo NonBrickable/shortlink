@@ -1,4 +1,4 @@
-package com.lv.shortlink.admin.remote.dto;
+package com.lv.shortlink.admin.remote.dto.resp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

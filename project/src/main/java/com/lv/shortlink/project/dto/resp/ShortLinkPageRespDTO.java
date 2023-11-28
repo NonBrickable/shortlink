@@ -62,4 +62,35 @@ public class ShortLinkPageRespDTO extends Page {
      * 图标
      */
     private String favicon;
+
+    /**
+     * 历史uv
+     */
+    private Integer totalUv;
+
+    /**
+     * 今日pv
+     */
+    private Integer todayUv;
+
+    /**
+     * 历史pv
+     */
+    private Integer totalPv;
+
+    /**
+     * 今日pv
+     */
+    private Integer todayPv;
+
+    /**
+     * 历史uip
+     */
+    private Integer totalUip;
+
+    /**
+     * 今日uip
+     */
+    private Integer todayUip;
+
 }
