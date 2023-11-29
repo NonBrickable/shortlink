@@ -1,5 +1,6 @@
 package com.lv.shortlink.admin.remote;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
@@ -40,7 +41,7 @@ public interface ShortLinkRemoteService {
     default Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
         Map<String, Object> requestMap = new HashMap<>();
         requestMap.put("gid", requestParam.getGid());
-        requestMap.put("orderTag",requestParam.getOrderTag());
+        requestMap.put("orderTag", requestParam.getOrderTag());
         requestMap.put("current", requestParam.getCurrent());
         requestMap.put("size", requestParam.getSize());
         String resultPageStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/page", requestMap);
@@ -114,12 +115,7 @@ public interface ShortLinkRemoteService {
      * 访问单个短链接指定时间内监控数据
      */
     default Result<ShortLinkStatsRespDTO> oneShortLinkStats(ShortLinkStatsReqDTO requestParam) {
-        Map<String,Object> requestMap = new HashMap<>();
-        requestMap.put("fullShortUrl",requestParam.getFullShortUrl());
-        requestMap.put("gid",requestParam.getGid());
-        requestMap.put("startDate",requestParam.getStartDate());
-        requestMap.put("endDate",requestParam.getEndDate());
-        String resultStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats", requestMap);
+        String resultStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats", BeanUtil.beanToMap(requestParam));
         return JSON.parseObject(resultStr, new TypeReference<Result<ShortLinkStatsRespDTO>>() {
         });
     }
@@ -127,16 +123,18 @@ public interface ShortLinkRemoteService {
     /**
      * 访问单个短链接指定时间内访问记录监控数据
      */
-    default Result<IPage<ShortLinkStatsAccessRecordRespDTO>> shortLinkStatsAccessRecord(ShortLinkStatsAccessRecordReqDTO requestParam){
-        Map<String,Object> requestMap = new HashMap<>();
-        requestMap.put("fullShortUrl",requestParam.getFullShortUrl());
-        requestMap.put("gid",requestParam.getGid());
-        requestMap.put("startDate",requestParam.getStartDate());
-        requestMap.put("endDate",requestParam.getEndDate());
-        requestMap.put("current",requestParam.getCurrent());
-        requestMap.put("size",requestParam.getSize());
-        String resultStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats/access-record", requestMap);
+    default Result<IPage<ShortLinkStatsAccessRecordRespDTO>> shortLinkStatsAccessRecord(ShortLinkStatsAccessRecordReqDTO requestParam) {
+        String resultStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats/access-record", BeanUtil.beanToMap(requestParam));
         return JSON.parseObject(resultStr, new TypeReference<>() {
+        });
+    }
+
+    /**
+     * 访问分组短链接指定时间内监控数据
+     */
+    default Result<ShortLinkStatsRespDTO> groupShortLinkStats(ShortLinkGroupStatsReqDTO requestParam) {
+        String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats/group", BeanUtil.beanToMap(requestParam));
+        return JSON.parseObject(resultBodyStr, new TypeReference<>() {
         });
     }
 }
