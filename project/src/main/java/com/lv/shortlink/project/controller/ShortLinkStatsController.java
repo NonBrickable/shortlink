@@ -9,7 +9,7 @@ import com.lv.shortlink.project.dto.req.ShortLinkStatsAccessRecordReqDTO;
 import com.lv.shortlink.project.dto.req.ShortLinkStatsReqDTO;
 import com.lv.shortlink.project.dto.resp.ShortLinkStatsAccessRecordRespDTO;
 import com.lv.shortlink.project.dto.resp.ShortLinkStatsRespDTO;
-import com.lv.shortlink.project.service.impl.ShortLinkStatsService;
+import com.lv.shortlink.project.service.ShortLinkStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

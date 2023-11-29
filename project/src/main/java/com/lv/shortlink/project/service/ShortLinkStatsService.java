@@ -1,4 +1,4 @@
-package com.lv.shortlink.project.service.impl;
+package com.lv.shortlink.project.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lv.shortlink.project.dto.req.ShortLinkGroupStatsAccessRecordReqDTO;

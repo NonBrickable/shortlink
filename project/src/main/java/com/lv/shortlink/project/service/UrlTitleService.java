@@ -15,34 +15,18 @@
  * limitations under the License.
  */
 
-package com.lv.shortlink.admin.remote.dto.req;
-
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.Data;
+package com.lv.shortlink.project.service;
 
 /**
- * 短链接监控访问记录请求参数
+ * URL 标题接口层
  */
-@Data
-public class ShortLinkStatsAccessRecordReqDTO extends Page {
+public interface UrlTitleService {
 
     /**
-     * 完整短链接
+     * 根据 URL 获取标题
+     *
+     * @param url 目标网站地址
+     * @return 网站标题
      */
-    private String fullShortUrl;
-
-    /**
-     * 分组标识
-     */
-    private String gid;
-
-    /**
-     * 开始日期
-     */
-    private String startDate;
-
-    /**
-     * 结束日期
-     */
-    private String endDate;
+    String getTitleByUrl(String url);
 }

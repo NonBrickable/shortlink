@@ -17,6 +17,7 @@ public enum ValidDateTypeEnum {
      * 自定义有效期
      */
     CUSTOM(1);
+
     @Getter
     private final Integer type;
 }

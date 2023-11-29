@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lv.shortlink.admin.common.convention.result.Result;
 import com.lv.shortlink.admin.common.convention.result.Results;
 import com.lv.shortlink.admin.remote.ShortLinkRemoteService;
-import com.lv.shortlink.admin.remote.dto.resp.ShortLinkUpdateReqDTO;
+import com.lv.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
 import com.lv.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.lv.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.lv.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;

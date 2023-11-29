@@ -19,14 +19,13 @@ package com.lv.shortlink.admin.remote.dto.req;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lv.shortlink.admin.dao.entity.LinkAccessLogsDO;
 import lombok.Data;
 
 /**
  * 分组短链接监控访问记录请求参数
  */
 @Data
-public class ShortLinkGroupStatsAccessRecordReqDTO extends Page<LinkAccessLogsDO> {
+public class ShortLinkGroupStatsAccessRecordReqDTO extends Page {
 
     /**
      * 分组标识

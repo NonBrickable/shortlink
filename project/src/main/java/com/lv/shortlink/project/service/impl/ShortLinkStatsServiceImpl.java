@@ -15,6 +15,7 @@ import com.lv.shortlink.project.dto.req.ShortLinkGroupStatsReqDTO;
 import com.lv.shortlink.project.dto.req.ShortLinkStatsAccessRecordReqDTO;
 import com.lv.shortlink.project.dto.req.ShortLinkStatsReqDTO;
 import com.lv.shortlink.project.dto.resp.*;
+import com.lv.shortlink.project.service.ShortLinkStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

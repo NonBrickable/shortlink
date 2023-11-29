@@ -6,10 +6,11 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lv.shortlink.admin.common.convention.result.Result;
-import com.lv.shortlink.admin.remote.dto.resp.ShortLinkUpdateReqDTO;
+import com.lv.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
 import com.lv.shortlink.admin.remote.dto.req.*;
 import com.lv.shortlink.admin.remote.dto.resp.*;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,18 @@ public interface ShortLinkRemoteService {
      */
     default void updateShortLink(@RequestBody ShortLinkUpdateReqDTO requestParam) {
         HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/update", JSON.toJSONString(requestParam));
+    }
+
+    /**
+     * 根据 URL 获取标题
+     *
+     * @param url 目标网站地址
+     * @return 网站标题
+     */
+    default Result<String> getTitleByUrl(@RequestParam("url") String url) {
+        String resultStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/title?url=" + url);
+        return JSON.parseObject(resultStr, new TypeReference<>() {
+        });
     }
 
     /**
