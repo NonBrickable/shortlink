@@ -17,7 +17,6 @@
 
 package com.lv.shortlink.project.service.impl;
 
-
 import com.lv.shortlink.project.service.UrlTitleService;
 import lombok.SneakyThrows;
 import org.jsoup.Jsoup;

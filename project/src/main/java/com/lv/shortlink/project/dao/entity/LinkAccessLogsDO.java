@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.lv.shortlink.project.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -13,9 +30,10 @@ import lombok.NoArgsConstructor;
 @Data
 @TableName("t_link_access_logs")
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class LinkAccessLogsDO extends BaseDO {
+
     /**
      * id
      */
@@ -37,9 +55,9 @@ public class LinkAccessLogsDO extends BaseDO {
     private String user;
 
     /**
-     * 地区
+     * 浏览器
      */
-    private String locale;
+    private String browser;
 
     /**
      * 操作系统
@@ -47,14 +65,9 @@ public class LinkAccessLogsDO extends BaseDO {
     private String os;
 
     /**
-     * 浏览器
+     * ip
      */
-    private String browser;
-
-    /**
-     * 访问设备
-     */
-    private String device;
+    private String ip;
 
     /**
      * 访问网络
@@ -62,7 +75,12 @@ public class LinkAccessLogsDO extends BaseDO {
     private String network;
 
     /**
-     * ip地址
+     * 访问设备
      */
-    private String ip;
+    private String device;
+
+    /**
+     * 地区
+     */
+    private String locale;
 }

@@ -1,13 +1,30 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.lv.shortlink.admin.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lv.shortlink.admin.dto.req.RecycleBinRecoverReqDTO;
+import com.lv.shortlink.admin.dto.req.RecycleBinRemoveReqDTO;
+import com.lv.shortlink.admin.dto.req.RecycleBinSaveReqDTO;
 import com.lv.shortlink.admin.common.convention.result.Result;
 import com.lv.shortlink.admin.common.convention.result.Results;
-import com.lv.shortlink.admin.remote.ShortLinkRemoteService;
-import com.lv.shortlink.admin.remote.dto.req.RecycleBinRecoverReqDTO;
-import com.lv.shortlink.admin.remote.dto.req.RecycleBinRemoveReqDTO;
-import com.lv.shortlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
-import com.lv.shortlink.admin.remote.dto.req.ShortLinkRecyclePageReqDTO;
+import com.lv.shortlink.admin.remote.ShortLinkActualRemoteService;
+import com.lv.shortlink.admin.remote.dto.req.ShortLinkRecycleBinPageReqDTO;
 import com.lv.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import com.lv.shortlink.admin.service.RecycleBinService;
 import lombok.RequiredArgsConstructor;
@@ -17,23 +34,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 回收站控制层
+ * 回收站管理控制层
  */
-@RestController
+@RestController(value = "recycleBinControllerByAdmin")
 @RequiredArgsConstructor
 public class RecycleBinController {
+
     private final RecycleBinService recycleBinService;
-    ShortLinkRemoteService shortLinkRemoteService = new ShortLinkRemoteService() {
-    };
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
 
     /**
-     * 保存到回收站
-     * @param requestParam
-     * @return
+     * 保存回收站
      */
     @PostMapping("/api/short-link/admin/v1/recycle-bin/save")
-    public Result<Void> saveRecycleBin(@RequestBody RecycleBinSaveReqDTO requestParam){
-        shortLinkRemoteService.saveRecycleBin(requestParam);
+    public Result<Void> saveRecycleBin(@RequestBody RecycleBinSaveReqDTO requestParam) {
+        shortLinkActualRemoteService.saveRecycleBin(requestParam);
         return Results.success();
     }
 
@@ -41,25 +56,25 @@ public class RecycleBinController {
      * 分页查询回收站短链接
      */
     @GetMapping("/api/short-link/admin/v1/recycle-bin/page")
-    public Result<IPage<ShortLinkPageRespDTO>> pageRecycleBinShortLink(ShortLinkRecyclePageReqDTO requestParam){
+    public Result<Page<ShortLinkPageRespDTO>> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
         return recycleBinService.pageRecycleBinShortLink(requestParam);
     }
 
     /**
-     * 短链接恢复
+     * 恢复短链接
      */
     @PostMapping("/api/short-link/admin/v1/recycle-bin/recover")
-    public Result<Void> recoverRecycleBin(@RequestBody RecycleBinRecoverReqDTO requestParam){
-        shortLinkRemoteService.recoverRecycleBin(requestParam);
+    public Result<Void> recoverRecycleBin(@RequestBody RecycleBinRecoverReqDTO requestParam) {
+        shortLinkActualRemoteService.recoverRecycleBin(requestParam);
         return Results.success();
     }
 
     /**
-     * 短链接彻底删除
+     * 移除短链接
      */
     @PostMapping("/api/short-link/admin/v1/recycle-bin/remove")
-    public Result<Void> removeRecycleBin(@RequestBody RecycleBinRemoveReqDTO requestParam){
-        shortLinkRemoteService.removeRecycleBin(requestParam);
+    public Result<Void> removeRecycleBin(@RequestBody RecycleBinRemoveReqDTO requestParam) {
+        shortLinkActualRemoteService.removeRecycleBin(requestParam);
         return Results.success();
     }
 }

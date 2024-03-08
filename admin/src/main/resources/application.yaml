@@ -1,12 +1,26 @@
 server:
-    port: 8002
+  port: 8002
+
 spring:
-    datasource:
-        # ShardingSphere 对 Driver 自定义，实现分库分表等隐藏逻辑
-        driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
-        # ShardingSphere 配置文件路径
-        url: jdbc:shardingsphere:classpath:shardingsphere-config.yaml
-    data:
-        redis:
-            host: 43.138.5.79
-            port: 6379
+  application:
+    name: short-link-admin
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:shardingsphere-config-${database.env:dev}.yaml
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: 123456
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+short-link:
+  group:
+    max-num: 20
+  flow-limit:
+    enable: true
+    time-window: 1
+    max-access-count: 20
