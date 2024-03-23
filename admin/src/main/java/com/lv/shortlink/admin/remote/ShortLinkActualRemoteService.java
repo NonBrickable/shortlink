@@ -42,12 +42,11 @@ import java.util.List;
 /**
  * 短链接中台远程调用服务
  */
-@FeignClient(value = "short-link-project", url = "${aggregation.remote-url:}")
+@FeignClient(value = "short-link-project")
 public interface ShortLinkActualRemoteService {
 
     /**
      * 创建短链接
-     *
      * @param requestParam 创建短链接请求参数
      * @return 短链接创建响应
      */
@@ -56,7 +55,6 @@ public interface ShortLinkActualRemoteService {
 
     /**
      * 批量创建短链接
-     *
      * @param requestParam 批量创建短链接请求参数
      * @return 短链接批量创建响应
      */
@@ -65,7 +63,6 @@ public interface ShortLinkActualRemoteService {
 
     /**
      * 修改短链接
-     *
      * @param requestParam 修改短链接请求参数
      */
     @PostMapping("/api/short-link/v1/update")

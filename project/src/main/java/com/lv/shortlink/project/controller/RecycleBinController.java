@@ -74,5 +74,6 @@ public class RecycleBinController {
     public Result<Void> removeRecycleBin(@RequestBody RecycleBinRemoveReqDTO requestParam) {
         recycleBinService.removeRecycleBin(requestParam);
         return Results.success();
+
     }
 }

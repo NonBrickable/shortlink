@@ -92,7 +92,7 @@ public class ShortLinkStatsSaveConsumer implements RocketMQListener<MessageExt> 
         RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(String.format(RedisKeyConstant.LOCK_GID_UPDATE_KEY, fullShortUrl));
         RLock rLock = readWriteLock.readLock();
         //获取Redisson的读写锁，以确保并发安全。
-        //尝试获取读锁，如果获取不到，说明有其他线程正在写入数据，此时将访问统计消息发送到消息队列，并立即返回。
+        //尝试获取读锁，如果获取不到，说明有其他线程正在修改gid，此时将访问统计消息发送到消息队列，并立即返回。
         if (!rLock.tryLock()) {
             delayShortLinkStatsProducer.delaySend(producerMap);
             return;
